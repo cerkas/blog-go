@@ -1,14 +1,17 @@
 package main
 
 import (
+	"awesomeProject1/models"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
-	"awesomeProject1/models"
+	"github.com/go-martini/martini"
 )
 var posts map[string] * models.Post
 func main() {
+	m := martini.Classic()
+	fmt.Println(m)
 	posts = make(map[string]*models.Post,0)
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/news", postHandler)
