@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	//"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -11,20 +10,29 @@ import (
 var posts map[string] * models.Post
 func main() {
 	posts = make(map[string]*models.Post,0)
-	http.HandleFunc("/", postHandler)
+	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/news", postHandler)
 	http.HandleFunc("/write", writeHandler)
 	http.HandleFunc("/SavePost", savePostHandler)
 	http.Handle("/assets/",http.StripPrefix("/assets/",http.FileServer(http.Dir("./assets"))))
 	log.Println("Listening...")
 	http.ListenAndServe(":3000", nil)
 }
-func postHandler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles("templates/index.html","templates/header.html","templates/footer.html")
 	if err !=nil {
 		fmt.Printf( err.Error())
-    }
+	}
 	t.ExecuteTemplate(w,"index",nil)
+}
+func postHandler(w http.ResponseWriter, r *http.Request) {
+
+	t, err := template.ParseFiles("templates/news.html","templates/header.html","templates/footer.html")
+	if err !=nil {
+		fmt.Printf( err.Error())
+    }
+	t.ExecuteTemplate(w,"news",posts)
 	}
 func writeHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -40,5 +48,6 @@ func savePostHandler(w http.ResponseWriter, r *http.Request)  {
 	content := r.FormValue("content")
 	post    := models.NewPost(id,title,content)
 	posts[post.Id] = post
+	fmt.Print(post)
 	http.Redirect(w,r,"/",302)
 }
