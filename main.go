@@ -13,13 +13,17 @@ func main() {
 	m := martini.Classic()
 	fmt.Println(m)
 	posts = make(map[string]*models.Post,0)
-	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/news", postHandler)
-	http.HandleFunc("/write", writeHandler)
-	http.HandleFunc("/SavePost", savePostHandler)
-	http.Handle("/assets/",http.StripPrefix("/assets/",http.FileServer(http.Dir("./assets"))))
+	m.Post("/assets/",http.StripPrefix("/assets/",http.FileServer(http.Dir("./assets"))))
+	staticOptions := martini.StaticOptions{Prefix:"assets"}
+	m.Use(martini.Static("assets",staticOptions))
+	m.Get("/", indexHandler)
+	m.Get("/news", postHandler)
+	m.Get("/write", writeHandler)
+	m.Post("/SavePost", savePostHandler)
+
 	log.Println("Listening...")
-	http.ListenAndServe(":3000", nil)
+	//http.ListenAndServe(":3000", nil)//Default port l
+	m.Run()
 }
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 
