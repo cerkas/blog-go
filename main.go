@@ -3,15 +3,17 @@ package main
 import (
 	"awesomeProject1/models"
 	"fmt"
+	"github.com/globalsign/mgo"
+	"github.com/go-martini/martini"
 	"html/template"
 	"log"
 	"net/http"
-	"github.com/go-martini/martini"
 )
 var posts map[string] * models.Post
+
+var postsCollection  *mgo.Collection
 func main() {
 	m := martini.Classic()
-	fmt.Println(m)
 	posts = make(map[string]*models.Post,0)
 	m.Post("/assets/",http.StripPrefix("/assets/",http.FileServer(http.Dir("./assets"))))
 	staticOptions := martini.StaticOptions{Prefix:"assets"}
@@ -22,7 +24,14 @@ func main() {
 	m.Post("/SavePost", savePostHandler)
 
 	log.Println("Listening...")
-	//http.ListenAndServe(":3000", nil)//Default port l
+/*	session , err := mgo.Dial("localhost")
+	if err != nil {
+		panic(err)
+
+	}else {
+		postsCollection = session.DB("blog" ).C("posts")
+	}*/
+	http.ListenAndServe(":3000", nil)//Default port l
 	m.Run()
 }
 func indexHandler(w http.ResponseWriter, r *http.Request) {
