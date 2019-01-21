@@ -1,0 +1,25 @@
+version: '3'
+services:
+
+  blog-go:
+    build: .
+    links:
+      - mongo:mongo
+    ports:
+      - "8080:8080"
+      - "9100:9100"
+      - "3000:3000"
+    environment:
+      - MONGO_HOST=mongo
+      - API_KEY=LOCALHOST_API_KEY
+      - DEV_ENV=true
+      - QUEUE_GC_INTERVAL=1  # to speed up automated tests
+    command: /go/bin/blog-go
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_USER="user"
+      - MONGODB_PASS="pass"
